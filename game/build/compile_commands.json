@@ -1,0 +1,62 @@
+[
+{
+  "directory": "F:/Projects/BrackeysDroneGame/game/build",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\Llvm\\x64\\bin\\CLANG_~1.EXE -DBANE_GAME_EXPORTS -Ddronebrackeys_EXPORTS -IF:/Projects/BrackeysDroneGame/game/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=gnu++17 -o CMakeFiles\\dronebrackeys.dir\\src\\game.cpp.obj -c F:\\Projects\\BrackeysDroneGame\\game\\src\\game.cpp",
+  "file": "F:\\Projects\\BrackeysDroneGame\\game\\src\\game.cpp",
+  "output": "CMakeFiles\\dronebrackeys.dir\\src\\game.cpp.obj"
+},
+{
+  "directory": "F:/Projects/BrackeysDroneGame/game/build",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\Llvm\\x64\\bin\\CLANG_~1.EXE -DBANE_GAME_EXPORTS -Ddronebrackeys_EXPORTS -IF:/Projects/BrackeysDroneGame/game/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=gnu++17 -o CMakeFiles\\dronebrackeys.dir\\src\\logic.cpp.obj -c F:\\Projects\\BrackeysDroneGame\\game\\src\\logic.cpp",
+  "file": "F:\\Projects\\BrackeysDroneGame\\game\\src\\logic.cpp",
+  "output": "CMakeFiles\\dronebrackeys.dir\\src\\logic.cpp.obj"
+},
+{
+  "directory": "F:/Projects/BrackeysDroneGame/game/build",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\Llvm\\x64\\bin\\CLANG_~1.EXE -DBANE_GAME_EXPORTS -Ddronebrackeys_EXPORTS -IF:/Projects/BrackeysDroneGame/game/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=gnu++17 -o CMakeFiles\\dronebrackeys.dir\\src\\render.cpp.obj -c F:\\Projects\\BrackeysDroneGame\\game\\src\\render.cpp",
+  "file": "F:\\Projects\\BrackeysDroneGame\\game\\src\\render.cpp",
+  "output": "CMakeFiles\\dronebrackeys.dir\\src\\render.cpp.obj"
+},
+{
+  "directory": "F:/Projects/BrackeysDroneGame/game/build",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\Llvm\\x64\\bin\\CLANG_~1.EXE -DBANE_GAME_EXPORTS -Ddronebrackeys_EXPORTS -IF:/Projects/BrackeysDroneGame/game/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=gnu++17 -o CMakeFiles\\dronebrackeys.dir\\src\\loadResources.cpp.obj -c F:\\Projects\\BrackeysDroneGame\\game\\src\\loadResources.cpp",
+  "file": "F:\\Projects\\BrackeysDroneGame\\game\\src\\loadResources.cpp",
+  "output": "CMakeFiles\\dronebrackeys.dir\\src\\loadResources.cpp.obj"
+},
+{
+  "directory": "F:/Projects/BrackeysDroneGame/game/build",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\Llvm\\x64\\bin\\CLANG_~1.EXE -DBANE_GAME_EXPORTS -Ddronebrackeys_EXPORTS -IF:/Projects/BrackeysDroneGame/game/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=gnu++17 -o CMakeFiles\\dronebrackeys.dir\\src\\renderStaticModels.cpp.obj -c F:\\Projects\\BrackeysDroneGame\\game\\src\\renderStaticModels.cpp",
+  "file": "F:\\Projects\\BrackeysDroneGame\\game\\src\\renderStaticModels.cpp",
+  "output": "CMakeFiles\\dronebrackeys.dir\\src\\renderStaticModels.cpp.obj"
+},
+{
+  "directory": "F:/Projects/BrackeysDroneGame/game/build",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\Llvm\\x64\\bin\\clang.exe -DBANE_GAME_EXPORTS -Ddronebrackeys_EXPORTS -IF:/Projects/BrackeysDroneGame/game/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -o CMakeFiles\\dronebrackeys.dir\\src\\glad.c.obj -c F:\\Projects\\BrackeysDroneGame\\game\\src\\glad.c",
+  "file": "F:\\Projects\\BrackeysDroneGame\\game\\src\\glad.c",
+  "output": "CMakeFiles\\dronebrackeys.dir\\src\\glad.c.obj"
+},
+{
+  "directory": "F:/Projects/BrackeysDroneGame/game/build",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\Llvm\\x64\\bin\\CLANG_~1.EXE -DBANE_GAME_EXPORTS -Ddronebrackeys_EXPORTS -IF:/Projects/BrackeysDroneGame/game/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=gnu++17 -o CMakeFiles\\dronebrackeys.dir\\src\\controllers\\fpsController.cpp.obj -c F:\\Projects\\BrackeysDroneGame\\game\\src\\controllers\\fpsController.cpp",
+  "file": "F:\\Projects\\BrackeysDroneGame\\game\\src\\controllers\\fpsController.cpp",
+  "output": "CMakeFiles\\dronebrackeys.dir\\src\\controllers\\fpsController.cpp.obj"
+},
+{
+  "directory": "F:/Projects/BrackeysDroneGame/game/build",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\Llvm\\x64\\bin\\CLANG_~1.EXE -DBANE_GAME_EXPORTS -Ddronebrackeys_EXPORTS -IF:/Projects/BrackeysDroneGame/game/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=gnu++17 -o CMakeFiles\\dronebrackeys.dir\\src\\controllers\\droneController.cpp.obj -c F:\\Projects\\BrackeysDroneGame\\game\\src\\controllers\\droneController.cpp",
+  "file": "F:\\Projects\\BrackeysDroneGame\\game\\src\\controllers\\droneController.cpp",
+  "output": "CMakeFiles\\dronebrackeys.dir\\src\\controllers\\droneController.cpp.obj"
+},
+{
+  "directory": "F:/Projects/BrackeysDroneGame/game/build",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\Llvm\\x64\\bin\\CLANG_~1.EXE -DBANE_GAME_EXPORTS -Ddronebrackeys_EXPORTS -IF:/Projects/BrackeysDroneGame/game/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=gnu++17 -o CMakeFiles\\dronebrackeys.dir\\src\\testDroneCharacter.cpp.obj -c F:\\Projects\\BrackeysDroneGame\\game\\src\\testDroneCharacter.cpp",
+  "file": "F:\\Projects\\BrackeysDroneGame\\game\\src\\testDroneCharacter.cpp",
+  "output": "CMakeFiles\\dronebrackeys.dir\\src\\testDroneCharacter.cpp.obj"
+},
+{
+  "directory": "F:/Projects/BrackeysDroneGame/game/build",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\Llvm\\x64\\bin\\CLANG_~1.EXE -DBANE_GAME_EXPORTS -Ddronebrackeys_EXPORTS -IF:/Projects/BrackeysDroneGame/game/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=gnu++17 -o CMakeFiles\\dronebrackeys.dir\\src\\snowworm.cpp.obj -c F:\\Projects\\BrackeysDroneGame\\game\\src\\snowworm.cpp",
+  "file": "F:\\Projects\\BrackeysDroneGame\\game\\src\\snowworm.cpp",
+  "output": "CMakeFiles\\dronebrackeys.dir\\src\\snowworm.cpp.obj"
+}
+]

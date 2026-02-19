@@ -1,0 +1,6 @@
+# ninja log v7
+7	334	7928733235305112	build.ninja	613d46a23b6fda86
+7	334	7928733235305112	F:/Projects/BrackeysDroneGame/exec/build/cmake_install.cmake	613d46a23b6fda86
+30	77	7928733236263502	CMakeFiles/dronebrackeysexec.dir/src/main.cpp.obj	ef3bc999cfaaceca
+35	671	7928733236303440	CMakeFiles/dronebrackeysexec.dir/src/glad.c.obj	96f3d7ea5faa0d0d
+675	818	7928733242717277	dronebrackeysexec.exe	b8e87ea440286416

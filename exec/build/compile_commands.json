@@ -1,0 +1,14 @@
+[
+{
+  "directory": "F:/Projects/BrackeysDroneGame/exec/build",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\Llvm\\x64\\bin\\CLANG_~1.EXE -IF:/Projects/BrackeysDroneGame/exec/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -std=gnu++17 -o CMakeFiles\\dronebrackeysexec.dir\\src\\main.cpp.obj -c F:\\Projects\\BrackeysDroneGame\\exec\\src\\main.cpp",
+  "file": "F:\\Projects\\BrackeysDroneGame\\exec\\src\\main.cpp",
+  "output": "CMakeFiles\\dronebrackeysexec.dir\\src\\main.cpp.obj"
+},
+{
+  "directory": "F:/Projects/BrackeysDroneGame/exec/build",
+  "command": "C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\Llvm\\x64\\bin\\clang.exe -IF:/Projects/BrackeysDroneGame/exec/include -O3 -DNDEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrt -o CMakeFiles\\dronebrackeysexec.dir\\src\\glad.c.obj -c F:\\Projects\\BrackeysDroneGame\\exec\\src\\glad.c",
+  "file": "F:\\Projects\\BrackeysDroneGame\\exec\\src\\glad.c",
+  "output": "CMakeFiles\\dronebrackeysexec.dir\\src\\glad.c.obj"
+}
+]
