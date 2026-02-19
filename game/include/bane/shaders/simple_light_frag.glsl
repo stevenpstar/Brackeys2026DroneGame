@@ -26,9 +26,12 @@ struct PointLight {
 };
 
 uniform sampler2D diffuseTexture;
+uniform sampler2D diffuseTexture2;
 uniform sampler2D specularMap;
 uniform sampler2D normalMap;
 uniform sampler2D shadowMap;
+uniform sampler2D heightMap2;
+uniform bool hasHeightMap2;
 uniform samplerCube reflectionMap;
 
 uniform vec3 lightPos;
@@ -37,6 +40,7 @@ uniform vec3 viewPos;
 uniform vec3 objectColour;
 uniform vec3 sunColour;
 uniform float sunIntensity;
+uniform float diffuseMix;
 uniform bool lightRim;
 uniform bool reflective;
 uniform bool hasNormalMap;
@@ -108,9 +112,14 @@ vec3 CalculatePointLight(PointLight light, vec3 norm, vec3 FragPos, vec3 viewDir
 }
 
 void main()
-{           
+{       
+    float finalDiffuseMix = diffuseMix;
     float reflectionAmount = 0.1;
-    vec3 color = texture(diffuseTexture, fs_in.TexCoords).rgb * objectColour;
+    if (hasHeightMap2) {
+      finalDiffuseMix = texture(heightMap2, fs_in.TexCoords).r;
+    }
+    vec3 color = mix(texture(diffuseTexture, fs_in.TexCoords).rgb, 
+    texture(diffuseTexture2, fs_in.TexCoords).rgb, finalDiffuseMix) * objectColour;
   //  vec3 normal = texture(normalMap, fs_in.TexCoords).rgb;
   //  normal = normalize(normal * 2.0 - 1.0);
     vec3 normal = normalize(fs_in.Normal);

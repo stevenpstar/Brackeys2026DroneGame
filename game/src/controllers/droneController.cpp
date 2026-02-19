@@ -275,17 +275,17 @@ void DroneController::update(float deltaTime,
   glm::vec3 lerpedCameraPosition = gameData->resources->camera.getPosition();
   lerpedCameraPosition =
       lerp(lerpedCameraPosition, desiredCameraPosition, 3.f * deltaTime);
-  if (lerpedCameraPosition.y > 30.f) {
-    lerpedCameraPosition.y = 30.f;
-  }
+  // if (lerpedCameraPosition.y > 30.f) {
+  //   lerpedCameraPosition.y = 30.f;
+  // }
   // if (lerpedCameraPosition.x < 0.f) {
   //   lerpedCameraPosition.x = 0.f;
   // }
 
-  if (lerpedCameraPosition.z > 10.f) {
-
-    lerpedCameraPosition.z = 10.f;
-  }
+  //  if (lerpedCameraPosition.z > 10.f) {
+  //
+  //    lerpedCameraPosition.z = 10.f;
+  //  }
 
   // gameData->resources->lightData.dirLight =
   //     this->droneCharacter->droneModel->transform.position + dirLightOffset;
@@ -468,53 +468,48 @@ void DroneController::processMouseInput(SDL_Window *window, int button,
 
 void DroneController::setColliderIndex(int id) { colliderIndex = id; }
 
-void DroneController::setSnowPixels(GLubyte *pixels,
+void DroneController::setSnowPixels(GLubyte *snowPixels,
                                     std::unique_ptr<GameData> &gameData) {
 
-  GLubyte *snowPixels = new GLubyte[128 * 128 * 4];
-  const float coordinateConversion = 128.0 / 50.0;
-  int x = floor((this->droneCharacter->transform.position.x + 25.f) *
+  // GLubyte *snowPixels = new GLubyte[127 * 127 * 4];
+  const float coordinateConversion = 127.0 / 100.0;
+  int x = floor((this->droneCharacter->transform.position.x + 50.f) *
                 coordinateConversion);
-  int y = floor((this->droneCharacter->transform.position.z + 25.f) *
+  int y = floor((this->droneCharacter->transform.position.z + 50.f) *
                 coordinateConversion);
 
-  // x = floor((33) * coordinateConversion);
-  // y = floor(11 * coordinateConversion);
+  //  x = floor((33) * coordinateConversion);
+  //  y = floor(11 * coordinateConversion);
 
   if (x < 0 || x > 127) {
+    std::cout << "X IS?: " << x << "\n";
     return;
   }
   if (y < 0 || y > 127) {
+
+    std::cout << "Y IS?: " << y << "\n";
     return;
   }
-
-  for (int i = 0; i < gameData->resources->Models.size(); ++i) {
-    if (gameData->resources->Models.at(i)->id == 1) {
-      glBindTexture(GL_TEXTURE_2D,
-                    gameData->resources->Models.at(i)->heightMap2Id);
-      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 128 * 4, 128 * 4, GL_RGBA,
-                      GL_UNSIGNED_BYTE, snowPixels);
-      //  std::cout << "snowPixels size: " << sizeof(snowPixels) << "\n";
-      size_t elmes_per_line = 128 * 4;
-      size_t row = y * elmes_per_line;
-      size_t col = x * 4;
+  for (int j = x - 2; j < x + 2; ++j) {
+    for (int j2 = y - 2; j2 < y + 2; ++j2) {
+      if (j < 0 || j > 127) {
+        continue;
+      }
+      if (j2 < 0 || j2 > 127) {
+        continue;
+      }
+      size_t elmes_per_line = 128 * 3;
+      size_t row = j2 * elmes_per_line;
+      size_t col = j * 3;
       size_t index = row + col;
-      std::cout << "r channel at x, y: " << x << ", " << y << ": "
-                << (int)snowPixels[index] << "index: " << index << "\n";
+      index = (j2 * 128 + j) * 3;
       snowPixels[index] = 0;
       snowPixels[index + 1] = 0;
       snowPixels[index + 2] = 0;
-      snowPixels[index + 3] = 0;
-
-      //   for (int i = 0; i < 128 + 128 * 4; i += 4) {
-      //     snowPixels[i] = 0;
-      //     snowPixels[i + 1] = 0;
-      //     snowPixels[i + 2] = 0;
-      //     snowPixels[i + 3] = 0;
-      //   }
-      break;
     }
   }
+
+  return;
 }
 
 void DroneController::Enable() {}

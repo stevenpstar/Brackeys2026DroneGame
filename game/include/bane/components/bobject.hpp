@@ -12,6 +12,7 @@ private:
 public:
   int id;
   unsigned int textureId;
+  unsigned int texture2Id;
   unsigned int specularId;
   unsigned int normalMapId;
   unsigned int heightMapId;
@@ -27,6 +28,7 @@ public:
   bool hasHeightMap = false;
   bool hasHeightMap2 = false;
   bool hasEmissiveMap = false;
+  float diffuseMix = 0.0;
   std::vector<Bobject *> children;
   Bobject(std::string objName, int id);
   virtual void Render(Camera *camera);

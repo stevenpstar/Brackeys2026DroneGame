@@ -133,6 +133,13 @@ void loadGameScene(std::string sceneName, std::unique_ptr<GameData> &gameData) {
         getTextureByName(bobj.heightMap2, gameData->resources->Textures);
 
     gameData->resources->Models.at(gameData->resources->Models.size() - 1)
+        ->texture2Id =
+        getTextureByName(bobj.diffuse2, gameData->resources->Textures);
+
+    gameData->resources->Models.at(gameData->resources->Models.size() - 1)
+        ->diffuseMix = bobj.diffuseMix;
+
+    gameData->resources->Models.at(gameData->resources->Models.size() - 1)
         ->hasSpecularMap = bobj.hasSpecularMap;
     gameData->resources->Models.at(gameData->resources->Models.size() - 1)
         ->hasHeightMap = bobj.hasHeightMap;

@@ -23,6 +23,7 @@
 #include <bane/utility/AABB.hpp>
 #include <bane/utility/ray.hpp>
 #include <bane/utility/shader.hpp>
+#include <cstdio>
 #include <game/data.hpp>
 #include <game/game.hpp>
 #include <game/logic.hpp>
@@ -61,7 +62,8 @@ std::unique_ptr<StaticMesh> testModel;
 std::vector<std::unique_ptr<SnowWorm>> SnowWorms;
 SDL_Gamepad *gamepad;
 bool drawDebug = true;
-GLubyte *snowPixels = new GLubyte[128 * 128 * 4];
+unsigned char *snowPixels = new unsigned char[128 * 128 * 3];
+int snowIndexTest = -1;
 
 Uint64 NOW = SDL_GetPerformanceCounter();
 Uint64 LAST = 0;
@@ -195,6 +197,77 @@ void InitGame() {
   // RIP Snow worms the animations would not work :(
   // SnowWorms.emplace_back(std::make_unique<SnowWorm>(SnowWorm(SnowWorm(
   //     gameData->settings->directory.c_str(), gameData, "snowworm_1", 600))));
+  // GLubyte *ptr = (GLubyte *)glMapBuffer(GL_PIXEL_UNPACK_BUFFER,
+  // GL_WRITE_ONLY);
+
+  for (int i = 0; i < gameData->resources->Models.size(); ++i) {
+    if (gameData->resources->Models.at(i)->id == 1) {
+      std::cout << "ABOUT TO UPDATE SHIT MATE!\n";
+      snowIndexTest = i;
+      for (size_t i = 0; i < 128 * 128 * 3; i += 3) {
+        snowPixels[i] = 255; // rand() % 256;
+        // std::cout << "snowpixels: " << i << ": " <<
+        //       (int)snowPixels[i] <<
+        // "\n";
+        snowPixels[i + 1] = 255; // rand() % 256;
+        snowPixels[i + 2] = 255; // rand() % 256;
+        // snowPixels[i + 3] = 255;
+      }
+
+      //   std::cout << "ERROR: " << glGetError() << "\n";
+      // }
+      //    //   GLint format;
+      //    //   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0,
+      //    //   GL_TEXTURE_INTERNAL_FORMAT,
+      //    //                            &format);
+      //    //   std::cout << "format: " << format << "\n";
+
+      //    // GLint texLevel;
+      //    // glGetTexLevelParameteriv(GL_TEXTURE_2D, 0,
+      //    GL_TEXTURE_WIDTH,
+      //    // &texLevel); std::cout << "texLevel: " << texLevel
+      //    << "\n";
+
+      //    // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+      //    //
+      //    glTextureStorage2D(gameData->resources->Models.at(i)->heightMap2Id,
+      //    0,
+      //    //                    GL_RGB, 128, 128);
+      //    //
+      //    glTextureSubImage2D(gameData->resources->Models.at(i)->heightMap2Id,
+      //    0,
+      //    // 0,
+      //    //                  0, 128, 128, GL_RGB,
+      //    GL_UNSIGNED_BYTE, snowPixels);
+
+      //    //   std::cout << "Error: " << glGetError() << "\n";
+
+      //    //   //  std::cout << "snowPixels size: " <<
+      //    sizeof(snowPixels) <<
+      //    "\n";
+      //    //  size_t elmes_per_line = 2048 * 3;
+      //    //  size_t row = y * elmes_per_line;
+      //    //  size_t col = x * 3;
+      //    //  size_t index = row + col;
+      //    //  index = (y * 2048 + x) * 3;
+      //    //  // std::cout << "r channel at x, y: " << x << ",
+      //    " << y << ":
+      //    "
+      //    //  //           << (int)snowPixels[index] <<
+      //    "index: " << index
+      //    <<
+      //    "\n";
+      //    //  snowPixels[index] = 0;
+      //    //  snowPixels[index + 1] = 0;
+      //    //  snowPixels[index + 2] = 0;
+      //    // snowPixels[index + 3] = 0;
+
+      //   gameData->resources->Shaders.at(ind)->setInt("heightMap2",
+      //   4);
+      break;
+    }
+  }
 }
 
 bool Loop() {
@@ -302,7 +375,6 @@ bool Loop() {
   }
 
   playerController->update(deltaTime, gameData);
-  playerController->setSnowPixels(snowPixels, gameData);
   fpsController->update(deltaTime, gameData);
 
   Update(gameData, deltaTime);
@@ -328,6 +400,35 @@ bool Loop() {
 
   SwitchBuffer();
   ClearColour();
+  if (snowIndexTest >= 0) {
+
+    playerController->setSnowPixels(snowPixels, gameData);
+
+    int shaderIndex = GetShader(gameData->resources, "simpleShader");
+
+    gameData->resources->Shaders.at(shaderIndex)->use();
+
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D,
+                  gameData->resources->Models.at(snowIndexTest)->heightMap2Id);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 128, 128, GL_RGB, GL_UNSIGNED_BYTE,
+                    snowPixels);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    // if (gameData->resources->Models.at(snowIndexTest)->hasHeightMap2) {
+    //   glActiveTexture(GL_TEXTURE4);
+    //   glBindTexture(
+    //       GL_TEXTURE_2D,
+    //       gameData->resources->Models.at(snowIndexTest)->heightMap2Id);
+    //   gameData->resources->Shaders.at(shaderIndex)
+    //       ->setBool(
+    //           "hasHeightMap2",
+    //           gameData->resources->Models.at(snowIndexTest)->hasHeightMap2);
+    //   gameData->resources->Shaders.at(shaderIndex)
+    //       ->setFloat("height2Intensity", 2.f);
+    // }
+  }
   renderModels(gameData);
   for (const auto &worm : SnowWorms) {
     worm->Render(gameData);
@@ -351,4 +452,7 @@ bool Loop() {
 
   return gameRunning;
 }
-void Cleanup() { DestroyBane(); }
+void Cleanup() {
+  delete[] snowPixels;
+  DestroyBane();
+}

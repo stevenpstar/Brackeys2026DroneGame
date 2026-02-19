@@ -106,11 +106,16 @@ void renderModel(std::unique_ptr<Resources> &resources, int i) {
   resources->Shaders.at(shaderIndex)->setInt("specularMap", 2);
   resources->Shaders.at(shaderIndex)->setInt("heightMap", 3);
   resources->Shaders.at(shaderIndex)->setInt("heightMap2", 4);
+  resources->Shaders.at(shaderIndex)->setInt("diffuseTexture2", 5);
+  resources->Shaders.at(shaderIndex)
+      ->setFloat("diffuseMix", resources->Models.at(i)->diffuseMix);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, resources->Models.at(i)->textureId);
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, getShadowTexture());
+  glActiveTexture(GL_TEXTURE5);
+  glBindTexture(GL_TEXTURE_2D, resources->Models.at(i)->texture2Id);
   if (resources->Models.at(i)->hasSpecularMap) {
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, resources->Models.at(i)->specularId);
@@ -124,7 +129,7 @@ void renderModel(std::unique_ptr<Resources> &resources, int i) {
     resources->Shaders.at(shaderIndex)
         ->setBool("hasHeightMap", resources->Models.at(i)->hasHeightMap);
 
-    resources->Shaders.at(shaderIndex)->setFloat("heightIntensity", 10.f);
+    resources->Shaders.at(shaderIndex)->setFloat("heightIntensity", 5.f);
   }
 
   if (resources->Models.at(i)->hasHeightMap2) {
@@ -132,7 +137,7 @@ void renderModel(std::unique_ptr<Resources> &resources, int i) {
     glBindTexture(GL_TEXTURE_2D, resources->Models.at(i)->heightMap2Id);
     resources->Shaders.at(shaderIndex)
         ->setBool("hasHeightMap2", resources->Models.at(i)->hasHeightMap2);
-    resources->Shaders.at(shaderIndex)->setFloat("height2Intensity", 1.f);
+    resources->Shaders.at(shaderIndex)->setFloat("height2Intensity", 2.f);
   }
 
   glActiveTexture(GL_TEXTURE0);
