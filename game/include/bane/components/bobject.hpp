@@ -28,7 +28,7 @@ public:
   bool hasHeightMap = false;
   bool hasHeightMap2 = false;
   bool hasEmissiveMap = false;
-  float diffuseMix = 0.0;
+  float diffuseMix = 1.0;
   std::vector<Bobject *> children;
   Bobject(std::string objName, int id);
   virtual void Render(Camera *camera);

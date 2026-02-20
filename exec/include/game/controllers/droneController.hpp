@@ -32,10 +32,11 @@ private:
   glm::vec3 targetLocation = glm::vec3(0.f);
   bool autoMoving = false;
   bool inChargingArea = false;
+
+public:
   float batteryCharge = 100.f;
   float batteryCapacity = 100.f;
 
-public:
 public:
   glm::vec3 batteryColour = glm::vec3(0.f);
   glm::vec3 dirLightOffset = glm::vec3(0.f, 0.f, 0.f);
@@ -61,8 +62,10 @@ public:
   virtual void setColliderIndex(int id);
   DroneController();
   void SetCharacter(const char *path, std::unique_ptr<GameData> &gameData);
-  void setSnowPixels(GLubyte *snowPixels, std::unique_ptr<GameData> &gameData);
+  void setSnowPixels(GLubyte *snowPixels, std::unique_ptr<GameData> &gameData,
+                     float x_offset, float y_offset);
   std::unique_ptr<DroneCharacter> droneCharacter;
+  void ActivateLaser(std::unique_ptr<GameData> &gameData);
 };
 
 #endif

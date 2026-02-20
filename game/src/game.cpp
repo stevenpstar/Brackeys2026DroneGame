@@ -61,8 +61,11 @@ std::unique_ptr<FpsController> fpsController;
 std::unique_ptr<StaticMesh> testModel;
 std::vector<std::unique_ptr<SnowWorm>> SnowWorms;
 SDL_Gamepad *gamepad;
-bool drawDebug = true;
-unsigned char *snowPixels = new unsigned char[128 * 128 * 3];
+bool drawDebug = false;
+unsigned char *snowPixels = new unsigned char[256 * 256 * 3];
+unsigned char *snowPixels2 = new unsigned char[256 * 256 * 3];
+unsigned char *snowPixels3 = new unsigned char[256 * 256 * 3];
+unsigned char *snowPixels4 = new unsigned char[256 * 256 * 3];
 int snowIndexTest = -1;
 
 Uint64 NOW = SDL_GetPerformanceCounter();
@@ -199,75 +202,8 @@ void InitGame() {
   //     gameData->settings->directory.c_str(), gameData, "snowworm_1", 600))));
   // GLubyte *ptr = (GLubyte *)glMapBuffer(GL_PIXEL_UNPACK_BUFFER,
   // GL_WRITE_ONLY);
-
-  for (int i = 0; i < gameData->resources->Models.size(); ++i) {
-    if (gameData->resources->Models.at(i)->id == 1) {
-      std::cout << "ABOUT TO UPDATE SHIT MATE!\n";
-      snowIndexTest = i;
-      for (size_t i = 0; i < 128 * 128 * 3; i += 3) {
-        snowPixels[i] = 255; // rand() % 256;
-        // std::cout << "snowpixels: " << i << ": " <<
-        //       (int)snowPixels[i] <<
-        // "\n";
-        snowPixels[i + 1] = 255; // rand() % 256;
-        snowPixels[i + 2] = 255; // rand() % 256;
-        // snowPixels[i + 3] = 255;
-      }
-
-      //   std::cout << "ERROR: " << glGetError() << "\n";
-      // }
-      //    //   GLint format;
-      //    //   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0,
-      //    //   GL_TEXTURE_INTERNAL_FORMAT,
-      //    //                            &format);
-      //    //   std::cout << "format: " << format << "\n";
-
-      //    // GLint texLevel;
-      //    // glGetTexLevelParameteriv(GL_TEXTURE_2D, 0,
-      //    GL_TEXTURE_WIDTH,
-      //    // &texLevel); std::cout << "texLevel: " << texLevel
-      //    << "\n";
-
-      //    // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-      //    //
-      //    glTextureStorage2D(gameData->resources->Models.at(i)->heightMap2Id,
-      //    0,
-      //    //                    GL_RGB, 128, 128);
-      //    //
-      //    glTextureSubImage2D(gameData->resources->Models.at(i)->heightMap2Id,
-      //    0,
-      //    // 0,
-      //    //                  0, 128, 128, GL_RGB,
-      //    GL_UNSIGNED_BYTE, snowPixels);
-
-      //    //   std::cout << "Error: " << glGetError() << "\n";
-
-      //    //   //  std::cout << "snowPixels size: " <<
-      //    sizeof(snowPixels) <<
-      //    "\n";
-      //    //  size_t elmes_per_line = 2048 * 3;
-      //    //  size_t row = y * elmes_per_line;
-      //    //  size_t col = x * 3;
-      //    //  size_t index = row + col;
-      //    //  index = (y * 2048 + x) * 3;
-      //    //  // std::cout << "r channel at x, y: " << x << ",
-      //    " << y << ":
-      //    "
-      //    //  //           << (int)snowPixels[index] <<
-      //    "index: " << index
-      //    <<
-      //    "\n";
-      //    //  snowPixels[index] = 0;
-      //    //  snowPixels[index + 1] = 0;
-      //    //  snowPixels[index + 2] = 0;
-      //    // snowPixels[index + 3] = 0;
-
-      //   gameData->resources->Shaders.at(ind)->setInt("heightMap2",
-      //   4);
-      break;
-    }
-  }
+  //
+  ResetGame();
 }
 
 bool Loop() {
@@ -286,7 +222,8 @@ bool Loop() {
       //  fpsController->processMouse(gameData->window, e.motion.xrel,
       //                              e.motion.yrel, gameData);
 
-      //  glm::vec3 rayDir = getRayFromMouse(&gameData->resources->camera, 1920,
+      //  glm::vec3 rayDir = getRayFromMouse(&gameData->resources->camera,
+      //  1920,
       //                                     1080, 1920 / 2.f, 1080 / 2.f);
       //  bool hovering_usable = false;
       //  unsigned int count = 0;
@@ -378,6 +315,13 @@ bool Loop() {
   fpsController->update(deltaTime, gameData);
 
   Update(gameData, deltaTime);
+  if (playerController->droneCharacter->batteryPercentage <= 0.f) {
+    ResetGame();
+  }
+  if (playerController->droneCharacter->techPiece1Collected &&
+      playerController->droneCharacter->techPiece2Collected) {
+    std::cout << " YOU WON! \n";
+  }
   // Render(gameData, deltaTime);
 
   Poll();
@@ -400,39 +344,84 @@ bool Loop() {
 
   SwitchBuffer();
   ClearColour();
-  if (snowIndexTest >= 0) {
+  if (playerController->droneCharacter->isLaserActive) {
+    for (int si = 0; si < gameData->resources->Colliders.size(); ++si) {
+      if (gameData->resources->Colliders
+              .at(playerController->droneCharacter->laserColliderIndex)
+              ->isColliding(gameData->resources->Colliders.at(si))) {
 
-    playerController->setSnowPixels(snowPixels, gameData);
+        if (gameData->resources->Colliders.at(si)->owner == nullptr) {
+          continue;
+        }
 
-    int shaderIndex = GetShader(gameData->resources, "simpleShader");
+        std::string terrainPieceFound = "";
+        bool foundSnow = false;
+        for (auto &tag : gameData->resources->Colliders.at(si)->tags) {
+          if (tag == "snow") {
+            foundSnow = true;
+          }
+          if (tag == "terrain1") {
+            terrainPieceFound = "terrain1";
+          }
+          if (tag == "terrain2") {
+            terrainPieceFound = "terrain2";
+          }
+          if (tag == "terrain3") {
+            terrainPieceFound = "terrain3";
+          }
+          if (tag == "terrain4") {
+            terrainPieceFound = "terrain4";
+          }
+        }
+        if (!foundSnow || terrainPieceFound == "") {
+          continue;
+        }
+        if (terrainPieceFound == "terrain1") {
+          playerController->setSnowPixels(snowPixels, gameData, 0.f, 0.f);
+        } else if (terrainPieceFound == "terrain2") {
+          playerController->setSnowPixels(snowPixels2, gameData, -100.f, 0.f);
 
-    gameData->resources->Shaders.at(shaderIndex)->use();
+        } else if (terrainPieceFound == "terrain3") {
+          playerController->setSnowPixels(snowPixels3, gameData, 0.f, -100.f);
+        } else if (terrainPieceFound == "terrain4") {
+          playerController->setSnowPixels(snowPixels4, gameData, -100.f,
+                                          -100.f);
+        }
 
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D,
-                  gameData->resources->Models.at(snowIndexTest)->heightMap2Id);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 128, 128, GL_RGB, GL_UNSIGNED_BYTE,
-                    snowPixels);
-    glGenerateMipmap(GL_TEXTURE_2D);
+        int shaderIndex = GetShader(gameData->resources, "simpleShader");
 
-    // if (gameData->resources->Models.at(snowIndexTest)->hasHeightMap2) {
-    //   glActiveTexture(GL_TEXTURE4);
-    //   glBindTexture(
-    //       GL_TEXTURE_2D,
-    //       gameData->resources->Models.at(snowIndexTest)->heightMap2Id);
-    //   gameData->resources->Shaders.at(shaderIndex)
-    //       ->setBool(
-    //           "hasHeightMap2",
-    //           gameData->resources->Models.at(snowIndexTest)->hasHeightMap2);
-    //   gameData->resources->Shaders.at(shaderIndex)
-    //       ->setFloat("height2Intensity", 2.f);
-    // }
+        gameData->resources->Shaders.at(shaderIndex)->use();
+
+        glActiveTexture(GL_TEXTURE4);
+        // glBindTexture(
+        //     GL_TEXTURE_2D,
+        //     gameData->resources->Models.at(si)->heightMap2Id);
+        glBindTexture(
+            GL_TEXTURE_2D,
+            gameData->resources->Colliders.at(si)->owner->heightMap2Id);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        if (terrainPieceFound == "terrain1") {
+          glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGB,
+                          GL_UNSIGNED_BYTE, snowPixels);
+
+        } else if (terrainPieceFound == "terrain2") {
+          glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGB,
+                          GL_UNSIGNED_BYTE, snowPixels2);
+        } else if (terrainPieceFound == "terrain3") {
+          glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGB,
+                          GL_UNSIGNED_BYTE, snowPixels3);
+
+        } else if (terrainPieceFound == "terrain4") {
+          glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGB,
+                          GL_UNSIGNED_BYTE, snowPixels4);
+        }
+
+        glGenerateMipmap(GL_TEXTURE_2D);
+      }
+    }
   }
+
   renderModels(gameData);
-  for (const auto &worm : SnowWorms) {
-    worm->Render(gameData);
-  }
 
   playerController->droneCharacter->Render(gameData);
 
@@ -452,7 +441,143 @@ bool Loop() {
 
   return gameRunning;
 }
+
+// for death
+void ResetGame() {
+
+  playerController->droneCharacter->transform.position =
+      glm::vec3(-15.f, 15.f, -10.f);
+  playerController->droneCharacter->batteryPercentage = 100.f;
+  playerController->batteryCharge = playerController->batteryCapacity;
+  gameData->resources->camera.setPosition(glm::vec3(-15.f, 30.f, -10.f));
+
+  playerController->droneCharacter->techPiece1Collected = false;
+  playerController->droneCharacter->techPiece2Collected = false;
+  playerController->droneCharacter->techPiece3Collected = false;
+  playerController->droneCharacter->techPiece4Collected = false;
+
+  for (auto &collider : gameData->resources->Colliders) {
+    for (auto &tag : collider->tags) {
+      if (tag == "found") {
+        tag = "unfound";
+      }
+      if (tag == "scanned") {
+        tag = "scannable";
+      }
+    }
+  }
+
+  for (size_t i = 0; i < 256 * 256 * 3; i += 3) {
+    snowPixels[i] = 255;
+    snowPixels[i + 1] = 255;
+    snowPixels[i + 2] = 255;
+
+    snowPixels2[i] = 255;
+    snowPixels2[i + 1] = 255;
+    snowPixels2[i + 2] = 255;
+
+    snowPixels3[i] = 255;
+    snowPixels3[i + 1] = 255;
+    snowPixels3[i + 2] = 255;
+
+    snowPixels4[i] = 255;
+    snowPixels4[i + 1] = 255;
+    snowPixels4[i + 2] = 255;
+  }
+
+  // sketchy but need to add owners to terrain colliders for snow manipulation
+  // editor does not currently support saving/loading these because it's just a
+  // pointer need to recreate connection here.
+
+  for (auto &model : gameData->resources->Models) {
+    if (model->name == "terraintest11") {
+      for (auto &collider : gameData->resources->Colliders) {
+        for (auto &tag : collider->tags) {
+          if (tag == "terrain1") {
+            collider->owner = model.get();
+          }
+        }
+      }
+    }
+    if (model->name == "terraintest12") {
+      for (auto &collider : gameData->resources->Colliders) {
+        for (auto &tag : collider->tags) {
+          if (tag == "terrain2") {
+            collider->owner = model.get();
+          }
+        }
+      }
+    }
+    if (model->name == "terraintest13") {
+      for (auto &collider : gameData->resources->Colliders) {
+        for (auto &tag : collider->tags) {
+          if (tag == "terrain3") {
+            collider->owner = model.get();
+          }
+        }
+      }
+    }
+    if (model->name == "terraintest14") {
+      for (auto &collider : gameData->resources->Colliders) {
+        for (auto &tag : collider->tags) {
+          if (tag == "terrain4") {
+            collider->owner = model.get();
+          }
+        }
+      }
+    }
+  }
+
+  // Reset snow
+  glActiveTexture(GL_TEXTURE4);
+  // glBindTexture(
+  //     GL_TEXTURE_2D,
+  //     gameData->resources->Models.at(si)->heightMap2Id);
+  for (auto &collider : gameData->resources->Colliders) {
+    if (collider->owner == nullptr) {
+      continue;
+    }
+    std::string terrainPieceFound = "";
+    for (auto &tag : collider->tags) {
+      if (tag == "terrain1") {
+        terrainPieceFound = "terrain1";
+      }
+      if (tag == "terrain2") {
+        terrainPieceFound = "terrain2";
+      }
+      if (tag == "terrain3") {
+        terrainPieceFound = "terrain3";
+      }
+      if (tag == "terrain4") {
+        terrainPieceFound = "terrain4";
+      }
+    }
+    glBindTexture(GL_TEXTURE_2D, collider->owner->heightMap2Id);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    if (terrainPieceFound == "terrain1") {
+      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGB,
+                      GL_UNSIGNED_BYTE, snowPixels);
+
+    } else if (terrainPieceFound == "terrain2") {
+      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGB,
+                      GL_UNSIGNED_BYTE, snowPixels2);
+    } else if (terrainPieceFound == "terrain3") {
+      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGB,
+                      GL_UNSIGNED_BYTE, snowPixels3);
+
+    } else if (terrainPieceFound == "terrain4") {
+      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGB,
+                      GL_UNSIGNED_BYTE, snowPixels4);
+    }
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+  }
+}
+
 void Cleanup() {
   delete[] snowPixels;
+  delete[] snowPixels2;
+  delete[] snowPixels3;
+  delete[] snowPixels4;
   DestroyBane();
 }

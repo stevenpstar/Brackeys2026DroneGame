@@ -129,7 +129,7 @@ void renderModel(std::unique_ptr<Resources> &resources, int i) {
     resources->Shaders.at(shaderIndex)
         ->setBool("hasHeightMap", resources->Models.at(i)->hasHeightMap);
 
-    resources->Shaders.at(shaderIndex)->setFloat("heightIntensity", 5.f);
+    resources->Shaders.at(shaderIndex)->setFloat("heightIntensity", 4.f);
   }
 
   if (resources->Models.at(i)->hasHeightMap2) {
@@ -137,7 +137,7 @@ void renderModel(std::unique_ptr<Resources> &resources, int i) {
     glBindTexture(GL_TEXTURE_2D, resources->Models.at(i)->heightMap2Id);
     resources->Shaders.at(shaderIndex)
         ->setBool("hasHeightMap2", resources->Models.at(i)->hasHeightMap2);
-    resources->Shaders.at(shaderIndex)->setFloat("height2Intensity", 2.f);
+    resources->Shaders.at(shaderIndex)->setFloat("height2Intensity", 1.f);
   }
 
   glActiveTexture(GL_TEXTURE0);

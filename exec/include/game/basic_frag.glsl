@@ -49,7 +49,7 @@ uniform bool hasSpecularMap;
 uniform bool hasEmissiveMap;
 uniform bool hasHeightMap2;
 
-#define NR_POINT_LIGHTS 2
+#define NR_POINT_LIGHTS 10
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 
 float ShadowCalculation(vec4 fragPosLightSpace)

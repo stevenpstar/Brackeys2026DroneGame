@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <wchar.h>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
@@ -31,11 +32,28 @@ void DroneController::processGamepadButtonInput(
       autoMoving = !autoMoving;
       if (autoMoving) {
         velocity = glm::vec3(0.f, 0.f, 0.f);
+        this->droneCharacter->isLaserActive = false;
+        this->droneCharacter->isScannerActive = false;
+
+      } else {
       }
     }
 
   } else if (button == "a" && !pressed) {
     forwardDown = false;
+  }
+  if (button == "b" && pressed && !autoMoving) {
+    this->droneCharacter->isLaserActive = true;
+  }
+  if (button == "b" && !pressed) {
+    this->droneCharacter->isLaserActive = false;
+  }
+
+  if (button == "y" && pressed && !autoMoving) {
+    this->droneCharacter->isScannerActive = true;
+  }
+  if (button == "y" && !pressed) {
+    this->droneCharacter->isScannerActive = false;
   }
 }
 
@@ -135,8 +153,31 @@ glm::vec3 DroneController::lerp(glm::vec3 x, glm::vec3 y, float t) {
 
 void DroneController::update(float deltaTime,
                              std::unique_ptr<GameData> &gameData) {
+
+  if (this->droneCharacter->scannerColliderIndex >= 0) {
+    gameData->resources->Colliders
+        .at(this->droneCharacter->scannerColliderIndex)
+        ->origin = glm::vec3(this->droneCharacter->transform.position.x,
+                             this->droneCharacter->transform.position.y - 40.f,
+                             this->droneCharacter->transform.position.z);
+  }
+
+  if (this->droneCharacter->laserColliderIndex >= 0) {
+    gameData->resources->Colliders.at(this->droneCharacter->laserColliderIndex)
+        ->origin = glm::vec3(this->droneCharacter->transform.position.x,
+                             this->droneCharacter->transform.position.y - 40.f,
+                             this->droneCharacter->transform.position.z);
+  }
+
   if (!inChargingArea) {
-    batteryCharge -= 1.f * deltaTime;
+    float batteryUsage = 0.f;
+    if (this->droneCharacter->isLaserActive) {
+      batteryUsage += 10.f;
+    }
+    if (this->droneCharacter->isScannerActive) {
+      batteryUsage += 5.f;
+    }
+    batteryCharge -= (1.f + batteryUsage) * deltaTime;
   }
   this->droneCharacter->batteryPercentage =
       (batteryCharge / batteryCapacity) * 100.f;
@@ -258,15 +299,78 @@ void DroneController::update(float deltaTime,
       glm::normalize(this->droneCharacter->droneModel->transform.rotation),
       glm::vec3(1.f, 0.f, 0.f));
 
-  gameData->resources->lightData.pointLights.at(0)->position =
-      glm::vec3(this->droneCharacter->transform.position.x,
-                this->droneCharacter->transform.position.y + 15.f,
-                this->droneCharacter->transform.position.z);
-  glm::vec3 lightColour = glm::vec3(0.1f, 0.1f, 0.3f);
+  if (this->droneCharacter->isLaserActive) {
+    // check collisions
+    for (auto &collider : gameData->resources->Colliders) {
+      if (gameData->resources->Colliders.at(
+              this->droneCharacter->laserColliderIndex) == collider) {
+        continue;
+      }
+
+      if (gameData->resources->Colliders
+              .at(this->droneCharacter->laserColliderIndex)
+              ->isColliding(collider)) {
+        for (auto &tag : collider->tags) {
+          if (tag == "unfound") {
+            std::cout << "Found something!\n";
+            tag = "found";
+          }
+        }
+      }
+    }
+    gameData->resources->lightData.pointLights.at(0)->position =
+        glm::vec3(this->droneCharacter->transform.position.x,
+                  this->droneCharacter->transform.position.y - 2.f,
+                  this->droneCharacter->transform.position.z);
+    glm::vec3 lightColour = glm::vec3(1.0f, 0.25f, 0.2f);
+    gameData->resources->lightData.pointLights.at(0)->diffuse = lightColour;
+  } else if (this->droneCharacter->isScannerActive) {
+    this->droneCharacter->scanTimer += 40.f * deltaTime;
+    gameData->resources->lightData.pointLights.at(0)->position =
+        glm::vec3(this->droneCharacter->transform.position.x,
+                  this->droneCharacter->transform.position.y,
+                  this->droneCharacter->transform.position.z);
+    glm::vec3 lightColour = glm::vec3(0.2f, 0.85f, 0.2f);
+    if (this->droneCharacter->scanTimer >= this->droneCharacter->scanTime) {
+      this->droneCharacter->scanTimer = 0.f;
+      for (auto &collider : gameData->resources->Colliders) {
+        if (gameData->resources->Colliders.at(
+                this->droneCharacter->laserColliderIndex) == collider) {
+          continue;
+        }
+
+        if (gameData->resources->Colliders
+                .at(this->droneCharacter->laserColliderIndex)
+                ->isColliding(collider)) {
+          for (auto &tag : collider->tags) {
+            if (tag == "scannable") {
+              tag = "scanned";
+            }
+            if (tag == "techpiece1") {
+              std::cout << "Found tech piece 1\n";
+              this->droneCharacter->techPiece1Collected = true;
+            }
+            if (tag == "techpiece2") {
+              std::cout << "Found tech piece 2\n";
+              this->droneCharacter->techPiece2Collected = true;
+            }
+          }
+        }
+      }
+    }
+
+    gameData->resources->lightData.pointLights.at(0)->diffuse = lightColour;
+  } else {
+    gameData->resources->lightData.pointLights.at(0)->position =
+        glm::vec3(this->droneCharacter->transform.position.x,
+                  this->droneCharacter->transform.position.y + 5.f,
+                  this->droneCharacter->transform.position.z);
+    glm::vec3 lightColour = glm::vec3(0.4f, 0.2, 0.0f);
+    gameData->resources->lightData.pointLights.at(0)->diffuse = lightColour;
+  }
   // lightColour.z += abs((velocity.z / (maxVelocity * 4.0)));
   // lightColour.z += abs((velocity.x / (maxVelocity * 4.0)));
   // lightColour.z += abs((velocity.y / (maxVelocity * 4.0)));
-  gameData->resources->lightData.pointLights.at(0)->diffuse = lightColour;
 
   glm::vec3 desiredCameraPosition =
       glm::vec3(this->droneCharacter->transform.position.x,
@@ -288,7 +392,8 @@ void DroneController::update(float deltaTime,
   //  }
 
   // gameData->resources->lightData.dirLight =
-  //     this->droneCharacter->droneModel->transform.position + dirLightOffset;
+  //     this->droneCharacter->droneModel->transform.position +
+  //     dirLightOffset;
   gameData->resources->camera.setPosition(lerpedCameraPosition);
   // gameData->resources->camera.setPosition(glm::vec3(0.f, 15.f, 10.f));
   gameData->resources->camera.setCameraDirection(glm::vec3(0.f, -0.5f, -0.5f));
@@ -469,43 +574,60 @@ void DroneController::processMouseInput(SDL_Window *window, int button,
 void DroneController::setColliderIndex(int id) { colliderIndex = id; }
 
 void DroneController::setSnowPixels(GLubyte *snowPixels,
-                                    std::unique_ptr<GameData> &gameData) {
+                                    std::unique_ptr<GameData> &gameData,
+                                    float x_offset, float y_offset) {
+  if (!this->droneCharacter->isLaserActive) {
+    return;
+  }
 
   // GLubyte *snowPixels = new GLubyte[127 * 127 * 4];
-  const float coordinateConversion = 127.0 / 100.0;
-  int x = floor((this->droneCharacter->transform.position.x + 50.f) *
+  const float coordinateConversion = 256.0 / 100.0;
+  int x = floor((this->droneCharacter->transform.position.x + 50.f - x_offset) *
                 coordinateConversion);
-  int y = floor((this->droneCharacter->transform.position.z + 50.f) *
+  int y = floor((this->droneCharacter->transform.position.z + 50.f - y_offset) *
                 coordinateConversion);
 
   //  x = floor((33) * coordinateConversion);
   //  y = floor(11 * coordinateConversion);
 
-  if (x < 0 || x > 127) {
-    std::cout << "X IS?: " << x << "\n";
+  if (x < 0 || x > 255) {
     return;
   }
-  if (y < 0 || y > 127) {
+  if (y < 0 || y > 255) {
 
-    std::cout << "Y IS?: " << y << "\n";
     return;
   }
-  for (int j = x - 2; j < x + 2; ++j) {
-    for (int j2 = y - 2; j2 < y + 2; ++j2) {
-      if (j < 0 || j > 127) {
+  for (int j = x - 3; j < x + 3; ++j) {
+    for (int j2 = y - 3; j2 < y + 3; ++j2) {
+      if (j < 0 || j > 255) {
         continue;
       }
-      if (j2 < 0 || j2 > 127) {
+      if (j2 < 0 || j2 > 255) {
         continue;
       }
-      size_t elmes_per_line = 128 * 3;
+      size_t elmes_per_line = 255 * 3;
       size_t row = j2 * elmes_per_line;
       size_t col = j * 3;
       size_t index = row + col;
-      index = (j2 * 128 + j) * 3;
-      snowPixels[index] = 0;
-      snowPixels[index + 1] = 0;
-      snowPixels[index + 2] = 0;
+      index = (j2 * 256 + j) * 3;
+      int value = 0 + (((abs(x - j) + abs(y - j2)) * rand() % 50));
+      int firstValue = snowPixels[index] - value;
+      if (firstValue < 0) {
+        firstValue = 0;
+      }
+      int secondValue = snowPixels[index + 1] - value;
+      if (secondValue < 0) {
+        secondValue = 0;
+      }
+
+      int thirdValue = snowPixels[index + 2] - value;
+      if (thirdValue < 0) {
+        thirdValue = 0;
+      }
+
+      snowPixels[index] = 0;     // firstValue;
+      snowPixels[index + 1] = 0; // secondValue;
+      snowPixels[index + 2] = 0; // thirdValue;
     }
   }
 

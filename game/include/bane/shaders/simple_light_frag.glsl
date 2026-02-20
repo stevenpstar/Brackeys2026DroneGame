@@ -45,7 +45,7 @@ uniform bool lightRim;
 uniform bool reflective;
 uniform bool hasNormalMap;
 uniform bool hasSpecularMap;
-#define NR_POINT_LIGHTS 2
+#define NR_POINT_LIGHTS 10
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 
 float ShadowCalculation(vec4 fragPosLightSpace)
@@ -116,7 +116,7 @@ void main()
     float finalDiffuseMix = diffuseMix;
     float reflectionAmount = 0.1;
     if (hasHeightMap2) {
-      finalDiffuseMix = texture(heightMap2, fs_in.TexCoords).r;
+      finalDiffuseMix = 1.0 - texture(heightMap2, fs_in.TexCoords).r;
     }
     vec3 color = mix(texture(diffuseTexture, fs_in.TexCoords).rgb, 
     texture(diffuseTexture2, fs_in.TexCoords).rgb, finalDiffuseMix) * objectColour;

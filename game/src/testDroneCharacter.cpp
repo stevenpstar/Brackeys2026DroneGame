@@ -5,12 +5,29 @@
 #include "game/data.hpp"
 #include "game/loadResources.hpp"
 #include <glad/glad.h>
+#include <iostream>
 #include <memory>
 DroneCharacter::DroneCharacter(std::string path,
                                std::unique_ptr<GameData> &gameData) {
   this->droneModel = std::make_unique<AnimatedModel>(AnimatedModel(
       (path + "../game/assets/animated_models/dronefinal2.gltf").c_str(),
       "testdronegfheaogea", 556));
+
+  for (int i = 0; i < gameData->resources->Colliders.size(); ++i) {
+    for (const auto &tag : gameData->resources->Colliders.at(i)->tags) {
+      if (tag == "scanner") {
+        scannerColliderIndex = i;
+      } else if (tag == "laser") {
+        laserColliderIndex = i;
+      }
+    }
+  }
+
+  if (scannerColliderIndex < 0 || laserColliderIndex < 0 ||
+      scannerColliderIndex == laserColliderIndex) {
+    std::cout << "Something has gone wrong with the collider init\n";
+  }
+
   this->droneModel->textureId =
       getTextureByName("droneblue", gameData->resources->Textures);
   this->droneModel->specularId =

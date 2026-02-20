@@ -12,5 +12,6 @@ extern "C" BANE_GAME_API void SetSDLWindow(SDL_Window *window);
 extern "C" BANE_GAME_API void InitGame();
 extern "C" BANE_GAME_API bool Loop();
 extern "C" BANE_GAME_API void Cleanup();
+void ResetGame();
 
 #endif
