@@ -37,7 +37,12 @@ void renderModel(std::unique_ptr<Resources> &resources, int i) {
 
   pos = pos * rot * scale;
 
-  int shaderIndex = GetShader(resources, "simpleShader");
+  // Oh boy this is hacky
+  std::string shader = "basicShader";
+  if (resources->Models.at(i)->hasHeightMap) {
+    shader = "simpleShader";
+  }
+  int shaderIndex = GetShader(resources, shader);
 
   resources->Shaders.at(shaderIndex)->use();
   resources->Shaders.at(shaderIndex)->setBool("lightRim", false);
@@ -124,6 +129,9 @@ void renderModel(std::unique_ptr<Resources> &resources, int i) {
   }
 
   if (resources->Models.at(i)->hasHeightMap) {
+    if (resources->Models.at(i)->name == "snowworm_static14") {
+      std::cout << "Hey we should not be here\n";
+    }
     glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_2D, resources->Models.at(i)->heightMapId);
     resources->Shaders.at(shaderIndex)

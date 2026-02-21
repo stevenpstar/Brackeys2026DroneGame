@@ -1,4 +1,4 @@
-std::string simple_light_vert = R"(
+std::string basic_vert = R"(
 #version 460 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
@@ -30,30 +30,15 @@ uniform float height2Intensity;
 
 void main()
 {
-   vec3 position = aPos;
-   if (hasHeightMap) {
-      float height = texture2D(heightMap, aTexCoords).r;
-      position = vec3(aPos.x, aPos.y + height * heightIntensity, aPos.z);
-    } else {
-    position = aPos;
-    }
-
-   if (hasHeightMap2 && hasHeightMap) {
-      float height = texture2D(heightMap2, aTexCoords).r;
-      position += vec3(0.0, position.y + height * height2Intensity, 0.0);
-    } else {
-    position = aPos;
-    }
-
-    vs_out.FragPos = vec3(model * vec4(position, 1.0));
+    vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
     vs_out.Normal = transpose(inverse(mat3(model))) * aNormal;
     vs_out.TexCoords = aTexCoords;
     vs_out.FragPosLightSpace = lightSpaceMatrix * vec4(vs_out.FragPos, 1.0);
     vs_out.viewNormal = vec3(model * view * vec4(aNormal, 1.0));
-    vs_out.viewFragPos = vec3(model * view * vec4(position, 1.0));
+    vs_out.viewFragPos = vec3(model * view * vec4(aPos, 1.0));
     //vs_out.Tangent = aTangent * model;
 
-    gl_Position = projection * view * model * vec4(position, 1.0);
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
    
 }
 )";

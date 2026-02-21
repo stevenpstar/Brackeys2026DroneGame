@@ -374,29 +374,28 @@ void DroneController::update(float deltaTime,
 
   glm::vec3 desiredCameraPosition =
       glm::vec3(this->droneCharacter->transform.position.x,
-                this->droneCharacter->transform.position.y + 12.f,
-                this->droneCharacter->transform.position.z + 12.f);
+                this->droneCharacter->transform.position.y + 80.f,
+                this->droneCharacter->transform.position.z + 40.f);
   glm::vec3 lerpedCameraPosition = gameData->resources->camera.getPosition();
   lerpedCameraPosition =
       lerp(lerpedCameraPosition, desiredCameraPosition, 3.f * deltaTime);
-  // if (lerpedCameraPosition.y > 30.f) {
-  //   lerpedCameraPosition.y = 30.f;
-  // }
-  // if (lerpedCameraPosition.x < 0.f) {
-  //   lerpedCameraPosition.x = 0.f;
-  // }
+  if (lerpedCameraPosition.y > 110.f) {
+    lerpedCameraPosition.y = 110.f;
+  }
+  if (lerpedCameraPosition.x < 0.f) {
+    lerpedCameraPosition.x = 0.f;
+  }
 
-  //  if (lerpedCameraPosition.z > 10.f) {
-  //
-  //    lerpedCameraPosition.z = 10.f;
-  //  }
+  if (lerpedCameraPosition.z > 90.f) {
+    lerpedCameraPosition.z = 90.f;
+  }
 
   // gameData->resources->lightData.dirLight =
   //     this->droneCharacter->droneModel->transform.position +
   //     dirLightOffset;
   gameData->resources->camera.setPosition(lerpedCameraPosition);
   // gameData->resources->camera.setPosition(glm::vec3(0.f, 15.f, 10.f));
-  gameData->resources->camera.setCameraDirection(glm::vec3(0.f, -0.5f, -0.5f));
+  gameData->resources->camera.setCameraDirection(glm::vec3(0.f, -0.5f, -0.25f));
   // gameData->resources->camera.setProjection(1920, 1080, 45.f);
 
   // CHECK COLLISIONS DO THIS IN A DIFFERENT FUNCTION OR CLASS AAHHHH

@@ -41,6 +41,7 @@
 #include <bane/shaders/simple_pixel_frag.glsl>
 #include <game/anim_vert.glsl>
 #include <game/basic_frag.glsl>
+#include <game/basic_vert.glsl>
 #include <game/drone_frag.glsl>
 
 // End Shaders
@@ -79,7 +80,7 @@ void resize_callback(SDL_Window *window, int width, int height) {
   winWidth = width;
   winHeight = height;
   ResizeViewport(width, height);
-  gameData->resources->camera.setProjection(width, height, 65.f);
+  gameData->resources->camera.setProjection(width, height, 20.f);
 }
 
 void Init() {
@@ -140,6 +141,7 @@ void InitGame() {
   Shader shadowShader(shadow_vert, shadow_frag, "shadowShader");
   Shader animShadowShader(shadow_anim_vert, shadow_frag, "animShadowShader");
   Shader simpleShader(simple_light_vert, basic_frag, "simpleShader");
+  Shader basicShader(basic_vert, basic_frag, "basicShader");
   Shader simpleAnimShader(anim_vert_shader, basic_frag, "animShader");
   Shader droneShader(anim_vert_shader, drone_frag, "droneShader");
   Shader animDebugShader(anim_vert_shader, rgb_tri_frag, "animDebugShader");
@@ -163,9 +165,11 @@ void InitGame() {
 
   gameData->resources->Shaders.emplace_back(
       std::make_unique<Shader>(droneShader));
+  gameData->resources->Shaders.emplace_back(
+      std::make_unique<Shader>(basicShader));
 
   gameData->resources->camera.setPosition(glm::vec3(0.f, 1.2f, 3.f));
-  gameData->resources->camera.setProjection(1920, 1080, 65.f);
+  gameData->resources->camera.setProjection(1920, 1080, 20.f);
 
   // Setting up controller, controller maybe needs more gamedata I don't know
   // at this point! TODO, implementation is prototype anyway.
@@ -198,11 +202,8 @@ void InitGame() {
 
   fpsController = std::make_unique<FpsController>(FpsController());
   // RIP Snow worms the animations would not work :(
-  // SnowWorms.emplace_back(std::make_unique<SnowWorm>(SnowWorm(SnowWorm(
-  //     gameData->settings->directory.c_str(), gameData, "snowworm_1", 600))));
-  // GLubyte *ptr = (GLubyte *)glMapBuffer(GL_PIXEL_UNPACK_BUFFER,
-  // GL_WRITE_ONLY);
-  //
+  SnowWorms.emplace_back(std::make_unique<SnowWorm>(SnowWorm(
+      gameData->settings->directory.c_str(), gameData, "snowworm_1", 600)));
   ResetGame();
 }
 
@@ -327,6 +328,9 @@ bool Loop() {
   Poll();
 
   playerController->droneCharacter->droneModel->UpdateAnimation(deltaTime);
+  for (auto &worm : SnowWorms) {
+    worm->model->UpdateAnimation(deltaTime);
+  }
   Camera testCamera = Camera(glm::vec3(0.f, 0.f, 0.f));
   gameData->resources->lightData.lightSpaceMatrix = RenderShadow(
       gameData->window, 2048, 2048,
@@ -422,6 +426,9 @@ bool Loop() {
   }
 
   renderModels(gameData);
+  for (auto &worm : SnowWorms) {
+    worm->Render(gameData);
+  }
 
   playerController->droneCharacter->Render(gameData);
 
@@ -432,7 +439,7 @@ bool Loop() {
   // playerController->droneCharacter->Render(gameData);
   int shaderIndex = GetShader(gameData->resources, "simplePixelShader");
   gameData->resources->Shaders.at(shaderIndex)->use();
-  gameData->resources->Shaders.at(shaderIndex)->setInt("size", 1);
+  gameData->resources->Shaders.at(shaderIndex)->setInt("size", 3);
   gameData->resources->Shaders.at(shaderIndex)->setFloat("width", 1920);
   gameData->resources->Shaders.at(shaderIndex)->setFloat("height", 1080);
 
@@ -445,6 +452,7 @@ bool Loop() {
 // for death
 void ResetGame() {
 
+  gameData->resources->camera.drawEnd = 400.f;
   playerController->droneCharacter->transform.position =
       glm::vec3(-15.f, 15.f, -10.f);
   playerController->droneCharacter->batteryPercentage = 100.f;

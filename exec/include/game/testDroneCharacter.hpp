@@ -22,6 +22,7 @@ public:
   bool techPiece2Collected = false;
   bool techPiece3Collected = false;
   bool techPiece4Collected = false;
+  bool batteryUpgraded = false;
   void Render(std::unique_ptr<GameData> &gameData);
   void RenderColour(std::unique_ptr<GameData> &gameData);
   void renderDroneShadow(std::unique_ptr<GameData> &gameData);

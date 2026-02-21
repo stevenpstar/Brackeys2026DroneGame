@@ -9,11 +9,12 @@
 SnowWorm::SnowWorm(std::string path, std::unique_ptr<GameData> &gameData,
                    std::string unique_name, int unique_id) {
   this->model = std::make_unique<AnimatedModel>(AnimatedModel(
-      (path + "../game/assets/animated_models/snowworm_anim.fbx").c_str(),
+      (path + "../game/assets/animated_models/snowwithsinglebone.glb").c_str(),
       unique_name.c_str(), unique_id));
   this->model->textureId =
       getTextureByName("snowworm", gameData->resources->Textures);
-  this->model->transform.position = glm::vec3(5.f, 15.f, -30.f);
+  this->model->transform.position = glm::vec3(0.f, 20.f, 0.f);
+  this->model->UpdateAnimation(0.f);
   this->model->PlayAnimation(0);
 }
 

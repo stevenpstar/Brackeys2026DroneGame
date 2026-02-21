@@ -143,6 +143,10 @@ void loadGameScene(std::string sceneName, std::unique_ptr<GameData> &gameData) {
         ->hasSpecularMap = bobj.hasSpecularMap;
     gameData->resources->Models.at(gameData->resources->Models.size() - 1)
         ->hasHeightMap = bobj.hasHeightMap;
+    if (bobj.diffuse == "snowworm") {
+      std::cout << "Does snow worm have a height map 1: " << bobj.hasHeightMap
+                << "\n";
+    }
     gameData->resources->Models.at(gameData->resources->Models.size() - 1)
         ->hasHeightMap2 = bobj.hasHeightMap2;
   }
